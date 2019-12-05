@@ -14,6 +14,10 @@ export default class Tile{
             throw new TypeError("You must put a number as argument");
         
         this.value = color;
-        this.node.style.backgroundColor = "red";
+
+        if(color === CASE_RED)
+            this.node.style.backgroundColor = "red";
+        else if(color === CASE_BLUE)
+            this.node.style.backgroundColor = "blue";
     }
 }

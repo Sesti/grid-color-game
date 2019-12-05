@@ -1,6 +1,6 @@
 import Tile from './Tile.js';
 
-const ANIM_TIME = 500;
+const ANIM_TIME = 333;
 
 export default class Gameboard  {
 
@@ -54,11 +54,22 @@ export default class Gameboard  {
      * @param e ClickEvent 
      */
     tileClickEvent(e){
+        if(this.teamTurn !== 1)
+            return;
+
         const tile = e.target;
         const tileIndex = this.grid.flat().findIndex(e => e.node.isSameNode(tile));
+        console.log("Player index : " + tileIndex);
         this.propagateTeam(tileIndex, this.teamTurn);
+        this.playAI();
     }
 
+    /**
+     * Recursive function propagating a color in the grid
+     * 
+     * @param index 
+     * @param color 
+     */
     propagateTeam(index, color){
         if(index < 0)
             return;
@@ -84,6 +95,28 @@ export default class Gameboard  {
         }, ANIM_TIME);
         
     }
+
+    /**
+     * AI plays
+     */
+    playAI(){
+        const total = this.grid.flat().length;
+        let start = this.getRandomInt(total);
+        while(this.grid[start].value === 1)
+            start = this.getRandomInt(total);
+        
+        this.propagateTeam(start, 2);
+    }
+
+    /**
+     * Get a random number from 0 to total
+     * 
+     * @param max Maximum number in the range
+     */
+    getRandomInt(max){
+        return Math.floor(Math.random() * Math.floor(max));
+    }
+
     /**
      * Dynamically create the style for the grid from the selector
      */
