@@ -1,0 +1,15 @@
+body{
+    padding:0;
+    margin:0;
+    box-sizing: border-box;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    height:100vh;
+}
+.tile{
+    border:1px solid rgba(0,0,0,0.3);
+    box-sizing: border-box;
+    transition:0.1s all ease-in;
+    background:rgba(50,50,50,0.3);
+}
