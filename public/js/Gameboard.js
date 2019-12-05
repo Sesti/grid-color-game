@@ -1,6 +1,7 @@
 import Tile from './Tile.js';
+import {CASE_BLUE, CASE_GREEN, CASE_RED, CASE_YELLOW, CASE_EMPTY} from './Constants.js'
 
-const ANIM_TIME = 333;
+const ANIM_TIME = 0;
 
 export default class Gameboard  {
 
@@ -10,7 +11,6 @@ export default class Gameboard  {
         this.grid = [];
         this.concreteGrid = [];
         this.selector = undefined;
-        this.teamTurn = 1;
         this.createGrid();
     }
 
@@ -19,7 +19,7 @@ export default class Gameboard  {
      */
     createGrid(){
         for(var i = 0 ; i < this.width * this.height ; i++){
-            this.grid[i] = new Tile;
+            this.grid[i] = new Tile(i);
         }
     }
 
@@ -54,14 +54,13 @@ export default class Gameboard  {
      * @param e ClickEvent 
      */
     tileClickEvent(e){
-        if(this.teamTurn !== 1)
-            return;
-
         const tile = e.target;
-        const tileIndex = this.grid.flat().findIndex(e => e.node.isSameNode(tile));
-        console.log("Player index : " + tileIndex);
-        this.propagateTeam(tileIndex, this.teamTurn);
-        this.playAI();
+        const index = parseInt(tile.dataset.index);
+        console.log("Player index : " + index);
+        this.propagateTeam(index, CASE_RED);
+        this.playAI(CASE_BLUE);
+        this.playAI(CASE_GREEN);
+        this.playAI(CASE_YELLOW);
     }
 
     /**
@@ -76,22 +75,23 @@ export default class Gameboard  {
 
         if(index > (this.width * this.height) - 1)    // -1 because array indexes...
             return;
-
-        if(this.grid.flat()[index].value !== 0)
-            return;
         
-        this.grid.flat()[index].changeTeam(color);
+        if(this.grid[index].value !== CASE_EMPTY)
+            return;
+
+        this.grid[index].changeTeam(color);
         
         setTimeout(() => {
+                
             this.propagateTeam(index - this.width, color);
             this.propagateTeam(index + this.width, color);
             
-            if((index % this.width) + 1 == (index+1) % this.width){
-                this.propagateTeam(index + 1, color);
-            }
+            if((index % this.width) + 1 == (index+1) % this.width)
+                this.propagateTeam(index + 1, color);            
             
             if((index % this.width) - 1 == (index-1) % this.width)
                 this.propagateTeam(index - 1, color);
+
         }, ANIM_TIME);
         
     }
@@ -99,13 +99,13 @@ export default class Gameboard  {
     /**
      * AI plays
      */
-    playAI(){
-        const total = this.grid.flat().length;
+    playAI(color){
+        const total = this.grid.length;
         let start = this.getRandomInt(total);
         while(this.grid[start].value === 1)
             start = this.getRandomInt(total);
         
-        this.propagateTeam(start, 2);
+        this.propagateTeam(start, color);
     }
 
     /**
