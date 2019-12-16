@@ -1,7 +1,7 @@
 import Tile from './Tile.js';
 import {CASE_BLUE, CASE_GREEN, CASE_RED, CASE_YELLOW, CASE_EMPTY} from './Constants.js'
 
-const ANIM_TIME = 0;
+const ANIM_TIME = 500;
 
 export default class Gameboard  {
 
@@ -11,6 +11,8 @@ export default class Gameboard  {
         this.grid = [];
         this.concreteGrid = [];
         this.selector = undefined;
+        this.emptyTiles = this.width * this.height;
+        this.event;
         this.createGrid();
     }
 
@@ -45,7 +47,8 @@ export default class Gameboard  {
         });
 
         this.generateGridStyle();
-        this.element.addEventListener('click', this.tileClickEvent.bind(this));
+        this.event = this.tileClickEvent.bind(this);
+        this.element.addEventListener('click', this.event);
     }
 
     /**
@@ -56,11 +59,13 @@ export default class Gameboard  {
     tileClickEvent(e){
         const tile = e.target;
         const index = parseInt(tile.dataset.index);
-        console.log("Player index : " + index);
+        
         this.propagateTeam(index, CASE_RED);
         this.playAI(CASE_BLUE);
         this.playAI(CASE_GREEN);
         this.playAI(CASE_YELLOW);
+
+        this.element.removeEventListener('click', this.event);
     }
 
     /**
@@ -73,13 +78,14 @@ export default class Gameboard  {
         if(index < 0)
             return;
 
-        if(index > (this.width * this.height) - 1)    // -1 because array indexes...
+        if(index > (this.width * this.height) - 1)    // -1 because, array indexes...
             return;
         
         if(this.grid[index].value !== CASE_EMPTY)
             return;
 
         this.grid[index].changeTeam(color);
+        this.emptyTiles--;
         
         setTimeout(() => {
                 
@@ -94,6 +100,8 @@ export default class Gameboard  {
 
         }, ANIM_TIME);
         
+        if(this.emptyTiles === 0)
+            this.displayScore();       
     }
 
     /**
@@ -129,5 +137,13 @@ export default class Gameboard  {
 
         style.appendChild(document.createTextNode(styles));
         this.element.appendChild(style);
+    }
+
+    displayScore(){
+        console.log('still not implemented...');
+    }
+
+    updateGrid(){
+        console.log('still not implemented...');
     }
 }
