@@ -1,17 +1,18 @@
 import Tile from './Tile.js';
 import {CASE_BLUE, CASE_GREEN, CASE_RED, CASE_ORANGE, CASE_EMPTY} from './Constants.js'
 
-const ANIM_TIME = 500;
+const ANIM_TIME = 400;
 
 export default class Gameboard  {
 
-    constructor(w = 10, h = 10){
+    constructor(w = 10, h = 10, a = ANIM_TIME){
         this.init(w, h);
     }
 
-    init(w, h){
+    init(w, h, a){
         this.width = parseInt(localStorage.getItem('gridWidth')) || parseInt(w);
         this.height = parseInt(localStorage.getItem('gridHeight')) || parseInt(h);
+        this.animTime = parseInt(localStorage.getItem('animTime')) || a;
         this.grid = [];
         this.emptyTiles = this.width * this.height;
         this.event;
@@ -82,9 +83,10 @@ export default class Gameboard  {
 
         let defaultWidth = localStorage.getItem('gridWidth') || 10;
         let defaultHeight = localStorage.getItem('gridHeight') || 10;
+        let defaultAnim = this.animTime || localStorage.getItem('animTime') || 400;
 
         this.controlsSelector = selector;
-        this.controlsElement.innerHTML = this.generateControlsMarkup(defaultWidth, defaultHeight);
+        this.controlsElement.innerHTML = this.generateControlsMarkup(defaultWidth, defaultHeight, defaultAnim);
         this.scoreElement = document.querySelector('#score');
 
         this.inputWidth = document.querySelector('#gridWidth');
@@ -97,6 +99,15 @@ export default class Gameboard  {
 
         this.resetButton = document.querySelector('#reset');
         this.resetButton.addEventListener('click', () => this.updateGrid());
+
+        this.inputAnim = document.querySelector('#anim');
+        this.animTag = document.querySelector('#animTag');
+        this.inputAnim.addEventListener('input', (e) => {
+            this.animTime = e.target.value ;
+            localStorage.setItem('animTime', this.animTime);
+            this.animTag.innerHTML = this.animTime + " ms";
+        });
+        
     }
 
     /**
@@ -149,7 +160,7 @@ export default class Gameboard  {
             if((index % this.width) - 1 == (index-1) % this.width)
                 this.propagateTeam(index - 1, color);
 
-        }, ANIM_TIME);
+        }, this.animTime);
         
         if(this.emptyTiles === 0)
             if(this.scoreElement !== undefined)
@@ -196,13 +207,19 @@ export default class Gameboard  {
     /**
      * Generate the markup for the grid controls
      */
-    generateControlsMarkup(w, h){
+    generateControlsMarkup(w, h, a){
         return `<h2>Controls</h2>
                 <div id="choice">
                     <input id="gridWidth" value="${w}"> X <input id="gridHeight" value="${h}">
                 </div>
+                <label for="anim">
+                    <span>Anim. speed</span>
+                    <input id="anim" type="range" min="0" max="5000" step="50" value="${a}">
+                    <span id="animTag">${a} ms<span>
+                </label>
+                <button id="reset">Reset Game</button>
                 <div id="score"></div>
-                <button id="reset">Reset Game</button>`;
+                `;
     }
 
     displayScore(){
@@ -262,5 +279,6 @@ export default class Gameboard  {
     
         localStorage.setItem('gridWidth', this.width);
         localStorage.setItem('gridHeight', this.height);
+        localStorage.setItem('animTime', this.animTime);
     }
 }
