@@ -21,6 +21,7 @@ export default class Gameboard  {
         this.controlsElement = undefined;
         this.controlsSelector = undefined;
         this.scoreElement = undefined;
+        this.resetButton = undefined;
         this.createGrid();
     }
 
@@ -93,6 +94,9 @@ export default class Gameboard  {
         this.inputHeight = document.querySelector('#gridHeight');
         this.inputHeight.addEventListener('click', function(){ this.setSelectionRange(0, this.value.length) }.bind(this.inputHeight));
         this.inputHeight.addEventListener('change', () => this.updateGrid());
+
+        this.resetButton = document.querySelector('#reset');
+        this.resetButton.addEventListener('click', () => this.updateGrid());
     }
 
     /**
@@ -197,7 +201,8 @@ export default class Gameboard  {
                 <div id="choice">
                     <input id="gridWidth" value="${w}"> X <input id="gridHeight" value="${h}">
                 </div>
-                <div id="score"></div>`;
+                <div id="score"></div>
+                <button id="reset">Reset Game</button>`;
     }
 
     displayScore(){
