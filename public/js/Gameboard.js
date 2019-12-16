@@ -6,13 +6,14 @@ const ANIM_TIME = 500;
 export default class Gameboard  {
 
     constructor(w, h){
-        this.width = w;
-        this.height = h;
+        this.width = parseInt(w);
+        this.height = parseInt(h);
         this.grid = [];
         this.concreteGrid = [];
         this.selector = undefined;
         this.emptyTiles = this.width * this.height;
         this.event;
+        this.npc = [CASE_BLUE, CASE_GREEN, CASE_YELLOW];
         this.createGrid();
     }
 
@@ -61,9 +62,9 @@ export default class Gameboard  {
         const index = parseInt(tile.dataset.index);
         
         this.propagateTeam(index, CASE_RED);
-        this.playAI(CASE_BLUE);
-        this.playAI(CASE_GREEN);
-        this.playAI(CASE_YELLOW);
+        this.npc.forEach(color => {
+            this.playAI(color);
+        });
 
         this.element.removeEventListener('click', this.event);
     }
@@ -80,7 +81,7 @@ export default class Gameboard  {
 
         if(index > (this.width * this.height) - 1)    // -1 because, array indexes...
             return;
-        
+
         if(this.grid[index].value !== CASE_EMPTY)
             return;
 
@@ -140,7 +141,7 @@ export default class Gameboard  {
     }
 
     displayScore(){
-        console.log('still not implemented...');
+        
     }
 
     updateGrid(){
