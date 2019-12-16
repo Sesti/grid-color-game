@@ -10,7 +10,7 @@ body{
 #app{
     position: relative;
 }
-#grid{    
+.grid{    
     opacity:0;
     animation:fadeIn 1s ease-in-out;
     animation-fill-mode: forwards;
@@ -21,7 +21,7 @@ body{
     transition:0.1s all ease-in;
     background:rgba(50,50,50,0.3);
 }
-#controls{
+.controls{
     position: absolute;
     right:calc(100% + 20px);
     top:0px;
@@ -33,7 +33,7 @@ body{
     animation-delay: 0.8s;
     animation-fill-mode: forwards;
 }
-#controls h2{
+.controls h2{
     font-family:"Lato", sans-serif;
     text-align:center;
     border:2px solid #000;

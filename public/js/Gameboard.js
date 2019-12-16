@@ -1,19 +1,26 @@
 import Tile from './Tile.js';
 import {CASE_BLUE, CASE_GREEN, CASE_RED, CASE_ORANGE, CASE_EMPTY} from './Constants.js'
 
-const ANIM_TIME = 100;
+const ANIM_TIME = 500;
 
 export default class Gameboard  {
 
-    constructor(w, h){
-        this.width = parseInt(w);
-        this.height = parseInt(h);
+    constructor(w = 10, h = 10){
+        this.init(w, h);
+    }
+
+    init(w, h){
+        this.width = parseInt(localStorage.getItem('gridWidth')) || parseInt(w);
+        this.height = parseInt(localStorage.getItem('gridHeight')) || parseInt(h);
         this.grid = [];
-        this.concreteGrid = [];
-        this.selector = undefined;
         this.emptyTiles = this.width * this.height;
         this.event;
         this.npc = [CASE_BLUE, CASE_GREEN, CASE_ORANGE];
+        this.inputHeight = undefined;
+        this.inputWidth = undefined;  
+        this.controlsElement = undefined;
+        this.controlsSelector = undefined;
+        this.scoreElement = undefined;
         this.createGrid();
     }
 
@@ -41,32 +48,51 @@ export default class Gameboard  {
         if(domGrid === undefined)
             throw new ReferenceError("Selector not valid. Can't display grid.");
 
-        this.selector = selector;
         this.element = domGrid;
 
-        this.grid.forEach(e => {
-            domGrid.appendChild(e.node);           
-        });
+        this.spawnGrid(this.element);
 
         this.generateGridStyle();
         this.event = this.tileClickEvent.bind(this);
-        this.element.addEventListener('click', this.event);
+        this.element.addEventListener('click', this.event);        
     }
 
     /**
-     * Attach the score selector to the score dom. When the score will be available, 
-     * it will be published in this reference.
+     * Create markup for the grid and append it to the element parameter
      * 
-     * @param {*} selector 
+     * @param {*} grid 
      */
-    attachScore(selector){
-        let domScore = document.querySelector(selector);
-        domScore.innerHTML = "";
+    spawnGrid(grid){
+        grid.innerHTML = "";
+        this.grid.forEach(e => {
+            grid.appendChild(e.node);           
+        });
+    }
 
-        if(domScore === undefined)
-            throw new ReferenceError("Selector not valid. Can't display score.");
+    attachControls(selector){
+        let domControls = document.querySelector(selector);
+        domControls.innerHTML = "";
+        domControls.classList.add('controls');
 
-        this.scoreElement = domScore;
+        if(domControls === undefined)
+            throw new ReferenceError("Selector not valid. Can't display controls.");
+
+        this.controlsElement = domControls;
+
+        let defaultWidth = localStorage.getItem('gridWidth') || 10;
+        let defaultHeight = localStorage.getItem('gridHeight') || 10;
+
+        this.controlsSelector = selector;
+        this.controlsElement.innerHTML = this.generateControlsMarkup(defaultWidth, defaultHeight);
+        this.scoreElement = document.querySelector('#score');
+
+        this.inputWidth = document.querySelector('#gridWidth');
+        this.inputWidth.addEventListener('click', function(){ this.setSelectionRange(0, this.value.length) }.bind(this.inputWidth));
+        this.inputWidth.addEventListener('change', () => this.updateGrid());
+
+        this.inputHeight = document.querySelector('#gridHeight');
+        this.inputHeight.addEventListener('click', function(){ this.setSelectionRange(0, this.value.length) }.bind(this.inputHeight));
+        this.inputHeight.addEventListener('change', () => this.updateGrid());
     }
 
     /**
@@ -95,12 +121,13 @@ export default class Gameboard  {
      * @param color 
      */
     propagateTeam(index, color){
+
         if(index < 0)
             return;
 
         if(index > (this.width * this.height) - 1)    // -1 because, array indexes...
             return;
-
+            
         if(this.grid[index].value !== CASE_EMPTY)
             return;
 
@@ -162,6 +189,17 @@ export default class Gameboard  {
         this.element.appendChild(style);
     }
 
+    /**
+     * Generate the markup for the grid controls
+     */
+    generateControlsMarkup(w, h){
+        return `<h2>Controls</h2>
+                <div id="choice">
+                    <input id="gridWidth" value="${w}"> X <input id="gridHeight" value="${h}">
+                </div>
+                <div id="score"></div>`;
+    }
+
     displayScore(){
         let colors = [0, 0];
         this.npc.forEach(c => colors[c] = 0);
@@ -190,5 +228,34 @@ export default class Gameboard  {
         }
         this.scoreElement.innerHTML = output;
         
+    }
+
+    updateGrid(){
+        
+        if(this.inputWidth.value <= 3)
+            this.inputWidth.value = 4;
+    
+        if(this.inputHeight.value <= 3)
+            this.inputHeight.value = 4;
+
+        this.width = parseInt(this.inputWidth.value);
+        this.height = parseInt(this.inputHeight.value);
+
+        this.event = this.tileClickEvent.bind(this);
+        this.element.removeEventListener('click', this.event); 
+
+        this.grid = [];        
+        this.emptyTiles = this.width * this.height;
+        this.createGrid();
+        this.spawnGrid(this.element);
+        this.generateGridStyle();
+        
+        this.event = this.tileClickEvent.bind(this);
+        this.element.addEventListener('click', this.event);
+
+        this.scoreElement.innerHTML = "";
+    
+        localStorage.setItem('gridWidth', this.width);
+        localStorage.setItem('gridHeight', this.height);
     }
 }
