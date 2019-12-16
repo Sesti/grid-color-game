@@ -1,7 +1,7 @@
 import Tile from './Tile.js';
 import {CASE_BLUE, CASE_GREEN, CASE_RED, CASE_ORANGE, CASE_EMPTY} from './Constants.js'
 
-const ANIM_TIME = 0;
+const ANIM_TIME = 100;
 
 export default class Gameboard  {
 
@@ -33,6 +33,7 @@ export default class Gameboard  {
       */
     attachTo(selector){
         let domGrid = document.querySelector(selector);
+        domGrid.innerHTML = "";
         domGrid.classList.add('grid');
         domGrid.style.display = "flex";
         domGrid.style.flexWrap = "wrap";
@@ -52,8 +53,15 @@ export default class Gameboard  {
         this.element.addEventListener('click', this.event);
     }
 
+    /**
+     * Attach the score selector to the score dom. When the score will be available, 
+     * it will be published in this reference.
+     * 
+     * @param {*} selector 
+     */
     attachScore(selector){
         let domScore = document.querySelector(selector);
+        domScore.innerHTML = "";
 
         if(domScore === undefined)
             throw new ReferenceError("Selector not valid. Can't display score.");
@@ -173,7 +181,6 @@ export default class Gameboard  {
         let it = players.entries();
         let result = it.next();
         while(!result.done){
-            console.log(result);
             output += `<p 
                             class='player_row' 
                             style='--color: ${result.value[0].toLowerCase()}'>
@@ -183,9 +190,5 @@ export default class Gameboard  {
         }
         this.scoreElement.innerHTML = output;
         
-    }
-
-    updateGrid(){
-        console.log('still not implemented...');
     }
 }
