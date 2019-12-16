@@ -272,7 +272,6 @@ export default class Gameboard  {
         this.spawnGrid(this.element);
         this.generateGridStyle();
         
-        this.event = this.tileClickEvent.bind(this);
         this.element.addEventListener('click', this.event);
 
         this.scoreElement.innerHTML = "";
