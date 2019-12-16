@@ -1,7 +1,7 @@
 import Tile from './Tile.js';
-import {CASE_BLUE, CASE_GREEN, CASE_RED, CASE_YELLOW, CASE_EMPTY} from './Constants.js'
+import {CASE_BLUE, CASE_GREEN, CASE_RED, CASE_ORANGE, CASE_EMPTY} from './Constants.js'
 
-const ANIM_TIME = 500;
+const ANIM_TIME = 0;
 
 export default class Gameboard  {
 
@@ -13,7 +13,7 @@ export default class Gameboard  {
         this.selector = undefined;
         this.emptyTiles = this.width * this.height;
         this.event;
-        this.npc = [CASE_BLUE, CASE_GREEN, CASE_YELLOW];
+        this.npc = [CASE_BLUE, CASE_GREEN, CASE_ORANGE];
         this.createGrid();
     }
 
@@ -52,6 +52,15 @@ export default class Gameboard  {
         this.element.addEventListener('click', this.event);
     }
 
+    attachScore(selector){
+        let domScore = document.querySelector(selector);
+
+        if(domScore === undefined)
+            throw new ReferenceError("Selector not valid. Can't display score.");
+
+        this.scoreElement = domScore;
+    }
+
     /**
      * Event triggered when tile is clicked
      * 
@@ -61,7 +70,9 @@ export default class Gameboard  {
         const tile = e.target;
         const index = parseInt(tile.dataset.index);
         
+        // Player 1
         this.propagateTeam(index, CASE_RED);
+        // Npcs
         this.npc.forEach(color => {
             this.playAI(color);
         });
@@ -102,7 +113,10 @@ export default class Gameboard  {
         }, ANIM_TIME);
         
         if(this.emptyTiles === 0)
-            this.displayScore();       
+            if(this.scoreElement !== undefined)
+                this.displayScore();       
+            else
+                throw new ReferenceError("Selector not defined. Can't display score.");
     }
 
     /**
@@ -141,6 +155,33 @@ export default class Gameboard  {
     }
 
     displayScore(){
+        let colors = [0, 0];
+        this.npc.forEach(c => colors[c] = 0);
+        this.grid.forEach(x => colors[x.value]++);
+
+        const total = colors.reduce((acc, cur) => acc + cur);
+        if( total != this.width * this.height)
+            throw new RangeError('Displayed tile count does not match system tile count');
+
+        let output = "";
+        const players = new Map();
+        players.set("Red", colors[1]);
+        players.set("Blue", colors[2]);
+        players.set("Green", colors[3]);
+        players.set("Orange", colors[4]);
+
+        let it = players.entries();
+        let result = it.next();
+        while(!result.done){
+            console.log(result);
+            output += `<p 
+                            class='player_row' 
+                            style='--color: ${result.value[0].toLowerCase()}'>
+                        ${result.value[0]} : ${result.value[1]}
+                        </p>`;            
+            result = it.next();
+        }
+        this.scoreElement.innerHTML = output;
         
     }
 

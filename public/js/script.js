@@ -11,7 +11,8 @@ inputWidth.addEventListener('click', selectInput.bind(inputWidth));
 inputHeight.addEventListener('click', selectInput.bind(inputHeight));
 
 let gameboard = new Gameboard(gridWidth,gridHeight);
-gameboard.attachTo('#app');
+gameboard.attachTo('#grid');
+gameboard.attachScore('#score');
 
 inputWidth.addEventListener('change', gameboard.updateGrid);
 inputHeight.addEventListener('change', gameboard.updateGrid);

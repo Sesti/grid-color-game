@@ -4,14 +4,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Grid Color Game</title>
+    <link href="https://fonts.googleapis.com/css?family=Lato:700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="public/css/style.css">
 </head>
 <body>
-    <div id="choice">
-        <input id="gridWidth" value="10"> X <input id="gridHeight" value="10">
+    
+    <div id="app">
+        <div id="controls">
+            <h2>Controls</h2>
+            <div id="choice">
+                <input id="gridWidth" value="10"> X <input id="gridHeight" value="10">
+            </div>
+            <div id="score"></div>
+        </div>
+        <div id="grid"></div>
     </div>
-    <div id="score"></div>
-    <div id="app"></div>
 
     <script type="module" src="public/js/script.js"></script>
 </body>

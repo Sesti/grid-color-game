@@ -1,4 +1,4 @@
-import {CASE_BLUE, CASE_GREEN, CASE_RED, CASE_YELLOW, CASE_EMPTY} from './Constants.js'
+import {CASE_BLUE, CASE_GREEN, CASE_RED, CASE_ORANGE, CASE_EMPTY} from './Constants.js'
 
 export default class Tile{
     constructor(index){
@@ -19,7 +19,7 @@ export default class Tile{
             case CASE_RED: color = "red"; break;
             case CASE_BLUE: color = "blue"; break;
             case CASE_GREEN: color = "green"; break;
-            case CASE_YELLOW: color = "yellow"; break;
+            case CASE_ORANGE: color = "orange"; break;
         }
         
         this.node.style.backgroundColor = color;            
